@@ -1,0 +1,26 @@
+services:
+  gpu-schedule-bot:
+    container_name: gpu-schedule-bot
+    image: ghcr.io/jemin7709/gpu-schedule-bot:latest
+    build: .
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
+    labels:
+      autoheal: true
+
+  gpu-schedule-bot-supervisor:
+    container_name: gpu-schedule-bot-supervisor
+    image: willfarrell/autoheal:latest
+    restart: always
+    environment:
+      - AUTOHEAL_CONTAINER_LABEL=gpu-schedule-bot
+      - AUTOHEAL_CONTAINER_LABEL=autoheal
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
