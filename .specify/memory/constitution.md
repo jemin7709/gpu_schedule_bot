@@ -1,13 +1,16 @@
 <!--
 Sync Impact Report
-- Version change: N/A → 1.0.0
-- Modified principles: Template placeholders replaced with concrete principles I–V
-- Added sections: "Scope, Non-Goals, and Constraints"; "Development Workflow & Quality Gates"
-- Removed sections: None (only template example comments removed)
+- Version change: 1.0.0 → 1.1.0
+- Modified principles:
+  - IV. 단순성·구성 가능성 (infra/dependency simplicity & maintainability guidance added)
+- Added sections: None
+- Removed sections: None
+- Modified non-principle sections:
+  - Scope, Non-Goals, and Constraints (Slack/Google/local PC architecture & data-source rules)
 - Templates requiring updates:
-  - .specify/templates/plan-template.md: ✅ aligned (Constitution Check derives gates from principles)
-  - .specify/templates/spec-template.md: ✅ aligned (no constitution-specific constraints required)
-  - .specify/templates/tasks-template.md: ✅ aligned (tasks organized by user story as required)
+  - .specify/templates/plan-template.md: ✅ aligned (Constitution Check derives gates from principles; infra choices captured in Technical Context)
+  - .specify/templates/spec-template.md: ✅ aligned (DB/infra constraints can be expressed in Requirements/Edge Cases)
+  - .specify/templates/tasks-template.md: ✅ aligned (no change required)
   - .specify/templates/agent-file-template.md: ✅ aligned (no agent-specific references)
   - .specify/templates/checklist-template.md: ✅ aligned (generic checklist structure)
   - .specify/templates/commands/*: ⚠ pending (directory not present; verify when commands are added)
@@ -45,6 +48,8 @@ Sync Impact Report
 - 기본 동작은 가능한 한 단순한 규칙(예: "선착순", "캘린더와 동일한 타임 슬롯 단위")으로 유지하고, 특별 규칙은 명시적 구성 옵션으로만 추가한다 (MUST).
 - 설정은 소수의 핵심 개념(예: GPU 그룹, 예약 단위 시간, 공정성 정책, 근무 시간대)으로 표현하며, 중복되거나 서로 상충하는 설정을 만들지 않는다 (MUST).
 - 새로운 설정을 추가할 때는 기본값·적용 범위·비활성화 방법을 스펙에 함께 정의해야 한다 (MUST).
+- 외부 서비스·라이브러리·인프라(예: 별도 DB, 메시지 큐)를 추가할 때는 이후 유지보수 복잡도와 장애 가능성을 고려해, 기본적으로는 Slack, Google 서비스, 로컬 실행 환경 3가지를 벗어나지 않는 구성을 우선 검토한다 (MUST).
+- 언제든 기능을 제거하거나 단순화할 수 있도록, 설정·코드·문서를 최소한으로 유지하고 중복을 피하며, 불필요해진 요소는 다음 작업 시 우선적으로 정리한다 (SHOULD).
 - 근거: 과도한 설정·예외 규칙은 팀이 유지하기 어렵고, 실제로는 사용되지 않는 옵션이 증가해 혼란만 만든다.
 
 ### V. 신뢰성·관측 가능성
@@ -61,6 +66,9 @@ Sync Impact Report
 - 모든 사용자-facing 설명(README, 온보딩 메시지, 주요 명령 도움말 등)에는 이 비강제적 특성(스케줄 조율용 봇이라는 점)을 명시해야 한다 (MUST).
 - 초기 목표 스케일은 대략 "GPU 1–10대, 사용자 5–50명 수준의 팀"으로 가정하며, 이를 넘어서는 사용량(수백 대의 GPU, 수백 명의 사용자)이 예상될 경우에는 스펙 단계에서 확장성 요구사항을 명시적으로 정의해야 한다 (MUST).
 - 성능 목표가 명시되지 않은 경우 기본 전제는 "일반적인 명령(조회·예약·취소) 응답 시간 p95 < 2초, Slack 레이트 리밋을 초과하지 않는 범위"로 한다 (DEFAULT CONSTRAINT).
+- 예약·사용자·정책 등 핵심 데이터의 단일 소스는 Google이 제공하는 서비스(예: Google Sheets, Google Workspace/Calendar 등)여야 하며, 로컬 PC의 파일이나 임시 DB에만 존재해서는 안 된다 (MUST).
+- 로컬 PC는 코드 실행과 로그·임시 데이터 저장 용도로만 사용하며, 로컬 상태를 잃어버려도 예약 데이터의 정합성과 공정성이 유지되도록 설계해야 한다 (MUST).
+- Slack·Google 이외의 외부 서비스나 인프라(예: 별도 모니터링 SaaS, 자체 운영 DB)는 예외적인 경우에만 도입하며, 스펙에서 단순성·유지보수성에 미치는 영향을 설명해야 한다 (SHOULD).
 
 ## Development Workflow & Quality Gates
 
@@ -88,4 +96,4 @@ Sync Impact Report
   - 위반이 필요한 경우, 위반 사유와 추후 개선 계획이 기록되었는지.
 - 외부 요구사항(예: 특정 연구팀의 특수한 예약 규칙, 기업 보안 정책 등)이 이 헌장과 상충하는 경우, 임시 예외를 허용할 수 있으나, 해당 예외는 별도 문서로 기록하고 다음 MAJOR 또는 MINOR 버전 개정 시 통합 여부를 검토해야 한다.
 
-**Version**: 1.0.0 | **Ratified**: 2025-11-22 | **Last Amended**: 2025-11-22
+**Version**: 1.1.0 | **Ratified**: 2025-11-22 | **Last Amended**: 2025-11-22
